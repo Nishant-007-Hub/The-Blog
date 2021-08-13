@@ -1,0 +1,141 @@
+{% extends 'basic.html' %}
+
+{% block title %}blogPost{% endblock title %}
+
+{% block body %}
+{% load humanize %}
+{% load extras %}
+<div class="container">
+    <!-- main post slide starts from here -->
+    <!-- {% if post %} -->
+    <h2>{{post.title}}</h2>
+    <div
+        class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 my-4 position-relative">
+        <div class="col p-4 d-flex flex-column position-static">
+            <strong class="d-inline-block mb-2 text-primary">World <span class="badge bg-info text-dark"> <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                      </svg> {{post.views}}</span>
+</strong>
+            <h3 class="mb-0">{{post.author}}</h3>
+            <div class="mb-1 text-muted">{{post.timeStamp}}</div>
+            <p class="card-text mb-auto">{{post.content|safe}}</p>
+            {% comment %} <a href="/blog" class="stretched-link">Continue Reading...</a> {% endcomment %}
+        </div>
+        <div class="col-auto d-none d-lg-block">
+        <img src="https://images.ctfassets.net/hrltx12pl8hq/3MbF54EhWUhsXunc5Keueb/60774fbbff86e6bf6776f1e17a8016b4/04-nature_721703848.jpg?fit=fill&w=480&h=270" width="300" height="400" alt="" srcset="">
+            {% comment %} <svg class="bd-placeholder-img" width="200" height="250" xmlns="http://www.w3.org/2000/svg"
+                preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Placeholder: Thumbnail">
+                <title>Placeholder</title>
+                <rect width="100%" height="100%" fill="#55595c"></rect><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
+            </svg> {% endcomment %}
+        </div>
+    </div>
+    <!-- {% endif %} -->
+    <!-- main post slide ends here -->
+
+
+    <div class="container">
+        <!-- chk user authetication -->
+        {% if user.is_anonymous %}
+        <p></p>
+        <div class="alert alert-warning" role="alert">
+            Login to Post a Comment!
+        </div>
+        {% else %}
+        <!-- Else block of chk user authetication -->
+
+        <!-- starts comments and reply from here -->
+        <h2> Comments({{comments.count}})</h2>
+        <form action="/blog/postComment" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="exampleInputEmail1">Post Comment</label>
+                <input type="text" class="form-control" name="comment" placeholder="Enter comment here">
+            </div>
+            <input type="hidden" name="postSno" value="{{post.sno}}">
+            <button type="submit" class="btn btn-primary mt-2">Post</button>
+        </form>
+        {% endif %}
+        <!-- end block of chk user authentication -->
+
+
+        <!-- start showing comments -->
+        {% for comment in comments %}
+        {% if not comment.parent %}
+        <div class="row my-3">
+            <div class="col-md-1">
+                <img class="rounded-circle mx-auto d-block w-100 p-2" src="/static/image/user.jpg" alt="user">
+            </div>
+            <div class="col-md-11" style="background-color: rgb(186, 233, 233)">
+                <b> {{comment.user.username}} </b> <span
+                    class="badge bg-secondary">{{comment.timeStamp|naturaltime}}</span>
+                <div> {{comment.comment}} </div>
+
+
+                <!-- reply box dropdown button -->
+                {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-primary" id="replybtn" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#reply{{comment.sno}}" aria-expanded="false" aria-controls="reply{{comment.sno}}">
+                    Reply
+                </button>
+                {% else %}
+                <button class="btn btn-sm btn-primary" id="replybtn" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#reply{{comment.sno}}" aria-expanded="false" aria-controls="reply{{comment.sno}}"
+                    disabled>
+                    Login to Reply
+                </button>
+                {% endif %}
+                {% endif %}
+
+                <!-- start showing reply box -->
+                <div class="collapse" id="reply{{comment.sno}}">
+                    <!-- <div class="card card-body"> -->
+                    <form action="/blog/postComment" method="post">
+                        {% csrf_token %}
+                        <div class="form-floating" style="margin-left: 2cm;">
+                            <textarea class="form-control" placeholder="Leave a comment here" name="replybox"
+                                id="replybox{{comment.sno}}" style="height: 100px"></textarea>
+                            <label for="floatingTextarea2">Reply</label>
+                            <input type="hidden" name="parentSno" value="{{comment.sno}}">
+                            <input type="hidden" name="replySno" value="reply{{comment.sno}}">
+                            <input type="hidden" name="postSno" value="{{post.sno}}">
+                        </div>
+                        <button type="submit" class="btn btn-success mt-1" style="margin-left:auto">Post</button>
+                    </form>
+                    <!-- </div> -->
+                </div>
+                <!-- end showing reply box -->
+
+                {% for item in allcomments %}
+                {% comment %} {% if item.parent %} {% endcomment %}
+                {% if item.parent.sno == comment.sno %}
+                {% comment %} the above line is very logical and clear than harry code made by me {% endcomment %}
+                {% comment %} {% for reply in replyDict|get_val:comment.sno %} {% endcomment %}
+                <div class="form-floating my-2" style="margin-left: 2cm;">
+                    <textarea class="form-control" placeholder="Leave a comment here"
+                        id="floatingTextarea">{{item.comment}}</textarea>
+                    <label for="floatingTextarea">{{item.user.username}}
+                        <span class="badge bg-dark">{{item.timeStamp|naturaltime}}</span></label>
+                </div>
+                {% comment %} {% endfor %} {% endcomment %}
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% comment %} above is endforloop of comment loop {% endcomment %}
+        </div>
+        <!-- end showing comments -->
+    </div>
+    <p>
+
+        {% endblock body %}
+
+        {% block js %}
+        <script>
+            replybutton = document.getElementById("replybtn")
+            replybutton.addEventListener("click", (e) => {
+                e.target.style.display = "none";
+            })
+        </script>
+        {% endblock js %}
