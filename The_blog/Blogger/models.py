@@ -11,6 +11,7 @@ class Post(models.Model):
     content = models.TextField()
     slug = models.SlugField(max_length=255, blank=True)
     timeStamp = models.DateTimeField(blank=True)
+    image = models.ImageField(upload_to="Blogger/blog_img", default = "")
 
     def __str__(self):
 

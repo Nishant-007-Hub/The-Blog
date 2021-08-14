@@ -48,7 +48,7 @@ def handlesignup(request):
         else:
             myuser = User.objects.create_user(username, email, pass2, first_name = fname,last_name = lname)
             myuser.save()
-            messages.success(request, " Your iCoder has been successfully created")
+            messages.success(request, " Your Account has been successfully created")
             return redirect('blank')
     else:
         return HttpResponse("404 - Not found")
@@ -67,7 +67,7 @@ def handleslogin(request):
             messages.success(request, f"Welcome {username}!!")
             return redirect("blank")
         else:
-            messages.error(request, "!Invalid credentials")
+            messages.error(request, "!! Invalid credentials")
             return redirect("blank")
 
     return HttpResponse("404 - Not found")
