@@ -81,8 +81,7 @@ def handleslogout(request):
 
 
 def search(request):
-    # if request.method == "GET":
-    # --------------------------------method-1----------------------------------------
+# --------------------------------method-1----------------------------------------
     query = request.GET.get("query").lower()
     posttitle = Post.objects.filter(title__icontains=query)
     postcontent = Post.objects.filter(content__icontains=query)
@@ -106,5 +105,3 @@ def search(request):
     context = {"results":searchedlist, "query":query , "nolist": string}
 
     return render(request,'home/search.html', context)
-
-    # return HttpResponse("this is search page") 
