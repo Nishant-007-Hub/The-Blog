@@ -5,8 +5,7 @@ document.head.appendChild(script);
 console.log('hii');
 
 script.onload = function () {
-    console.log('inside');
-    
+    console.log('inside'); 
     tinymce.init({
         selector: '#id_content',
         height:"480",

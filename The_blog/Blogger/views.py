@@ -57,9 +57,12 @@ def postComment(request):
 
         else:
             parent = BlogComment.objects.get(sno=parentSno)
+            print(parent.sno, "parent sno")
             ''' I was facing error because this else condition true if u posting reply and in Form tag in the blogPost.html had not postSno hidden input tag in it both comments and reply has post=post variable to save in BlogComment model and that post variable is come from serial number postSno so post=post is common in both condition either to post comment or reply so both Form tag should have postSno '''
             comment = BlogComment(comment=replytext, user=user, post=post, parent=parent)
             comment.save()
+            print(comment.parent.sno, "compar")
+            print(comment.sno, "comment sno")
             messages.success(request, "U just reply")
 
     return redirect(f"/blog/{post.slug}")
